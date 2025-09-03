@@ -1,0 +1,502 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   UPI Transaction App - Life Liner
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&amp;family=Roboto&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+      font-family: 'Roboto', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+    }
+  </style>
+ </head>
+ <body class="bg-gray-50 min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-yellow-500 text-white shadow-md sticky top-0 z-50">
+   <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+     <img alt="UPI app logo with stylized letters U P I in white on yellow background" class="w-12 h-12 rounded-full" height="48" src="https://storage.googleapis.com/a1aa/image/317803e5-0268-4ba3-ccdf-5823d5a45eed.jpg" width="48"/>
+     <h1 class="text-2xl font-bold">
+      Life Liner UPI
+     </h1>
+    </div>
+    <nav class="hidden md:flex space-x-6 font-semibold">
+     <a class="hover:underline" href="#send">
+      Send Money
+     </a>
+     <a class="hover:underline" href="#history">
+      Transaction History
+     </a>
+     <a class="hover:underline" href="#about">
+      About
+     </a>
+    </nav>
+    <button aria-label="Toggle menu" class="md:hidden focus:outline-none focus:ring-2 focus:ring-yellow-300" id="mobile-menu-button">
+     <i class="fas fa-bars fa-lg">
+     </i>
+    </button>
+   </div>
+   <div class="hidden md:hidden bg-yellow-400" id="mobile-menu">
+    <nav class="flex flex-col space-y-2 px-4 py-3 font-semibold text-white">
+     <a class="hover:underline" href="#send">
+      Send Money
+     </a>
+     <a class="hover:underline" href="#history">
+      Transaction History
+     </a>
+     <a class="hover:underline" href="#about">
+      About
+     </a>
+    </nav>
+   </div>
+  </header>
+  <!-- Main Content -->
+  <main class="flex-grow max-w-4xl mx-auto px-4 py-10 w-full">
+   <!-- Send Money Section -->
+   <section class="bg-white rounded-lg shadow-md p-8 mb-16" id="send">
+    <h2 class="text-3xl font-extrabold text-yellow-600 mb-6 text-center">
+     Send Money via UPI
+    </h2>
+    <form class="max-w-md mx-auto space-y-6" id="upi-form" novalidate="">
+     <div>
+      <label class="block text-gray-700 font-semibold mb-2" for="upiId">
+       UPI ID
+      </label>
+      <input class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" id="upiId" name="upiId" pattern="^[\w.-]+@[\w]+$" placeholder="example@bank" required="" type="text"/>
+      <p class="text-red-600 mt-1 text-sm hidden" id="upiIdError">
+       Please enter a valid UPI ID (e.g. example@bank).
+      </p>
+     </div>
+     <div>
+      <label class="block text-gray-700 font-semibold mb-2" for="name">
+       Recipient Name
+      </label>
+      <input class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" id="name" name="name" placeholder="Recipient's full name" required="" type="text"/>
+      <p class="text-red-600 mt-1 text-sm hidden" id="nameError">
+       Please enter the recipient's name.
+      </p>
+     </div>
+     <div>
+      <label class="block text-gray-700 font-semibold mb-2" for="amount">
+       Amount (₹)
+      </label>
+      <input class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" id="amount" min="1" name="amount" placeholder="Enter amount" required="" step="0.01" type="number"/>
+      <p class="text-red-600 mt-1 text-sm hidden" id="amountError">
+       Please enter a valid amount greater than 0.
+      </p>
+     </div>
+     <div>
+      <label class="block text-gray-700 font-semibold mb-2" for="note">
+       Note (optional)
+      </label>
+      <input class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500" id="note" name="note" placeholder="Payment note" type="text"/>
+     </div>
+     <div class="text-center">
+      <button class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-8 py-3 rounded shadow transition" type="submit">
+       Send Payment
+      </button>
+     </div>
+    </form>
+    <div class="hidden mt-6 max-w-md mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded" id="successMessage" role="alert">
+     <strong class="font-bold">
+      Success!
+     </strong>
+     <span class="block" id="successText">
+     </span>
+    </div>
+   </section>
+   <!-- Transaction History Section -->
+   <section class="bg-white rounded-lg shadow-md p-8 mb-16" id="history">
+    <h2 class="text-3xl font-extrabold text-yellow-600 mb-6 text-center">
+     Transaction History
+    </h2>
+    <div class="overflow-x-auto">
+     <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-yellow-100">
+       <tr>
+        <th class="px-6 py-3 text-left text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         Date &amp; Time
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         Recipient Name
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         UPI ID
+        </th>
+        <th class="px-6 py-3 text-right text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         Amount (₹)
+        </th>
+        <th class="px-6 py-3 text-left text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         Note
+        </th>
+        <th class="px-6 py-3 text-center text-xs font-semibold text-yellow-700 uppercase tracking-wider" scope="col">
+         Status
+        </th>
+       </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200" id="transactionTableBody">
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-06-01 14:32
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Rahul Sharma
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         rahul123@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         1500.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Monthly rent
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-28 09:15
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Priya Singh
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         priya.s@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         250.75
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Grocery payment
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-20 18:45
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Amit Verma
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         amitv@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         5000.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Car EMI
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-15 11:30
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Sneha Patel
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         sneha.p@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         1200.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Utility bills
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-10 16:20
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Karan Mehta
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         karan.m@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         300.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Coffee meetup
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-05 13:05
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Anjali Rao
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         anjali.r@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         750.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Gift
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-05-01 10:00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Rohit Kumar
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         rohit.k@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         1800.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Rent payment
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-04-28 15:45
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Meera Joshi
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         meera.j@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         600.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Dinner
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-04-25 12:10
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Vikram Singh
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         vikram.s@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         2200.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Laptop payment
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+       <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         2024-04-20 09:50
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Nisha Gupta
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         nisha.g@bank
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+         400.00
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+         Books
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-center">
+         <span class="text-green-600 font-semibold">
+          Success
+         </span>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </section>
+   <!-- About Section -->
+   <section class="bg-white rounded-lg shadow-md p-8" id="about">
+    <h2 class="text-3xl font-extrabold text-yellow-600 mb-6 text-center">
+     About Life Liner UPI
+    </h2>
+    <div class="max-w-3xl mx-auto text-gray-700 space-y-4 text-center">
+     <p>
+      Life Liner UPI is a secure and easy-to-use platform to send money instantly using UPI IDs. Our app ensures fast transactions with minimal effort, helping you manage your payments efficiently.
+     </p>
+     <p>
+      Built with user experience and security in mind, Life Liner UPI supports all major banks and provides a seamless interface for your daily transactions.
+     </p>
+     <img alt="Illustration of a mobile phone showing UPI transaction with digital payment icons and currency symbols" class="mx-auto rounded-lg shadow-lg mt-6" height="300" src="https://storage.googleapis.com/a1aa/image/8033ae50-a76c-4b98-0069-5564f6b6aeef.jpg" width="600"/>
+    </div>
+   </section>
+  </main>
+  <!-- Footer -->
+  <footer class="bg-yellow-500 text-white py-6 mt-auto">
+   <div class="max-w-4xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm">
+    <p>
+     © 2024 Life Liner UPI. All rights reserved.
+    </p>
+    <div class="flex space-x-6 mt-4 md:mt-0">
+     <a aria-label="Facebook" class="hover:text-yellow-300" href="#">
+      <i class="fab fa-facebook-f fa-lg">
+      </i>
+     </a>
+     <a aria-label="Twitter" class="hover:text-yellow-300" href="#">
+      <i class="fab fa-twitter fa-lg">
+      </i>
+     </a>
+     <a aria-label="LinkedIn" class="hover:text-yellow-300" href="#">
+      <i class="fab fa-linkedin-in fa-lg">
+      </i>
+     </a>
+     <a aria-label="Instagram" class="hover:text-yellow-300" href="#">
+      <i class="fab fa-instagram fa-lg">
+      </i>
+     </a>
+    </div>
+   </div>
+  </footer>
+  <script>
+   // Mobile menu toggle
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Form validation and submission simulation
+    const form = document.getElementById('upi-form');
+    const upiIdInput = document.getElementById('upiId');
+    const nameInput = document.getElementById('name');
+    const amountInput = document.getElementById('amount');
+    const noteInput = document.getElementById('note');
+
+    const upiIdError = document.getElementById('upiIdError');
+    const nameError = document.getElementById('nameError');
+    const amountError = document.getElementById('amountError');
+    const successMessage = document.getElementById('successMessage');
+    const successText = document.getElementById('successText');
+    const transactionTableBody = document.getElementById('transactionTableBody');
+
+    function validateUPI(upi) {
+      // Simple regex for UPI ID validation: some text + @ + some text
+      return /^[\w.-]+@[\w]+$/.test(upi);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let valid = true;
+
+      // Validate UPI ID
+      if (!upiIdInput.value.trim() || !validateUPI(upiIdInput.value.trim())) {
+        upiIdError.classList.remove('hidden');
+        valid = false;
+      } else {
+        upiIdError.classList.add('hidden');
+      }
+
+      // Validate Name
+      if (!nameInput.value.trim()) {
+        nameError.classList.remove('hidden');
+        valid = false;
+      } else {
+        nameError.classList.add('hidden');
+      }
+
+      // Validate Amount
+      const amountVal = parseFloat(amountInput.value);
+      if (isNaN(amountVal) || amountVal <= 0) {
+        amountError.classList.remove('hidden');
+        valid = false;
+      } else {
+        amountError.classList.add('hidden');
+      }
+
+      if (!valid) return;
+
+      // Simulate transaction success
+      const now = new Date();
+      const dateTime = now.toISOString().slice(0, 16).replace('T', ' ');
+
+      // Create new row for transaction history
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${dateTime}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${nameInput.value.trim()}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${upiIdInput.value.trim()}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${amountVal.toFixed(2)}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${noteInput.value.trim() || '-'}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-center"><span class="text-green-600 font-semibold">Success</span></td>
+      `;
+
+      // Prepend new transaction to the top
+      transactionTableBody.prepend(tr);
+
+      // Show success message
+      successText.textContent = `₹${amountVal.toFixed(2)} sent successfully to ${nameInput.value.trim()} (${upiIdInput.value.trim()}).`;
+      successMessage.classList.remove('hidden');
+
+      // Reset form
+      form.reset();
+
+      // Scroll to transaction history
+      document.getElementById('history').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+ </body>
+</html>
